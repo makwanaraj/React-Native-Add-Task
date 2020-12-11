@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Text, View, TextInput } from 'react-native';
+import { Button, StyleSheet, TextInput, View, Text } from 'react-native';
 import Constants from "expo-constants";
 
 export default function App() {
-  const [changeText, setChangeText] = useState();
+  const [enteredTask,setEnteredTask] =useState('');
+  const [tasks, setTasks] = useState([]);
 
-  function changeHandle(change) {
-    setChangeText(change);
+  const goalInputHandler = (enteredText) => {
+    setEnteredTask(enteredText);
+  }
+
+  const addGoalHandler = () =>{
+    setTasks(currentTask => [...currentTask, enteredTask])
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <TextInput placeholder="Add Goal" style={styles.input} />
-        <Button title="Add" />
+        <TextInput placeholder="Add Task" style={styles.input} onChangeText={goalInputHandler} value={enteredTask} />
+        <Button title="Add" onPress={addGoalHandler} />
+      </View>
+
+      <View>
+      {tasks.map((task) =><View key={task} style={styles.listItem}><Text>{task}</Text></View>)}
       </View>
     </View>
   );
@@ -21,16 +30,29 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: Constants.statusBarHeight,
+    // paddingTop: Constants.statusBarHeight,
+    padding: 50,
+
+  },
+
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 
   input: {
-    borderWidth: 1,
+    width: "80%",
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    padding: 10,
+  },
+
+  listItem:{
+    padding:10,
+    backgroundColor: "#ccc",
     borderColor: "black",
-    marginBottom: 20
+    borderWidth: 1, 
+    marginVertical: 10
   }
 });
