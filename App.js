@@ -1,29 +1,38 @@
-import React, { useState } from 'react';
-import { Button, StyleSheet, TextInput, View, Text } from 'react-native';
-import Constants from "expo-constants";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import TaskList from "./components/TaskList";
+import TaskInput from "./components/TaskInput";
 
 export default function App() {
-  const [enteredTask,setEnteredTask] =useState('');
   const [tasks, setTasks] = useState([]);
 
-  const goalInputHandler = (enteredText) => {
-    setEnteredTask(enteredText);
-  }
+  const addTaskHandler = (taskTitle) => {
+    setTasks((currentTask) => [
+      ...currentTask,
+      { id: Math.random().toString(), value: taskTitle },
+    ]);
+  };
 
-  const addGoalHandler = () =>{
-    setTasks(currentTask => [...currentTask, enteredTask])
-  }
+  const removeTaskHandler = (taskId) => {
+    setTasks((currentTask) => {
+      return currentTask.filter((task) => task.id !== taskId);
+    });
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput placeholder="Add Task" style={styles.input} onChangeText={goalInputHandler} value={enteredTask} />
-        <Button title="Add" onPress={addGoalHandler} />
-      </View>
-
-      <View>
-      {tasks.map((task) =><View key={task} style={styles.listItem}><Text>{task}</Text></View>)}
-      </View>
+      <TaskInput onAddTask={addTaskHandler} />
+      <FlatList
+        keyExtractor={(item, index) => item.id}
+        data={tasks}
+        renderItem={(itemData) => (
+          <TaskList
+             id={ itemData.item.id}
+            onDelete={removeTaskHandler}
+            title={itemData.item.value}
+          />
+        )}
+      />
     </View>
   );
 }
@@ -32,27 +41,5 @@ const styles = StyleSheet.create({
   container: {
     // paddingTop: Constants.statusBarHeight,
     padding: 50,
-
   },
-
-  inputContainer: {
-    flexDirection: 'row',
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  input: {
-    width: "80%",
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-    padding: 10,
-  },
-
-  listItem:{
-    padding:10,
-    backgroundColor: "#ccc",
-    borderColor: "black",
-    borderWidth: 1, 
-    marginVertical: 10
-  }
 });
