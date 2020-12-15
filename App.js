@@ -1,36 +1,53 @@
-import React, { useState } from 'react';
-import { Button, StyleSheet, Text, View, TextInput } from 'react-native';
-import Constants from "expo-constants";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, View, Button } from "react-native";
+import TaskList from "./components/TaskList";
+import TaskInput from "./components/TaskInput";
 
 export default function App() {
-  const [changeText, setChangeText] = useState();
+  const [tasks, setTasks] = useState([]);
+  const [isAddModal, setIsAddModal] =useState(false); 
 
-  function changeHandle(change) {
-    setChangeText(change);
+  const addTaskHandler = (taskTitle) => {
+    setTasks((currentTask) => [
+      ...currentTask,
+      { id: Math.random().toString(), value: taskTitle },
+    ]);
+
+    setIsAddModal(false);
+  };
+
+  const removeTaskHandler = (taskId) => {
+    setTasks((currentTask) => {
+      return currentTask.filter((task) => task.id !== taskId);
+    });
+  };
+
+  const cancelTaskHandler = () => {
+    setIsAddModal(false);
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput placeholder="Add Goal" style={styles.input} />
-        <Button title="Add" />
-      </View>
+      <Button title="Add New Goal" onPress={() => setIsAddModal(true)}/>
+      <TaskInput visible = {isAddModal} onAddTask={addTaskHandler} onCancelTask ={cancelTaskHandler} />
+      <FlatList
+        keyExtractor={(item, index) => item.id}
+        data={tasks}
+        renderItem={(itemData) => (
+          <TaskList
+             id={ itemData.item.id}
+            onDelete={removeTaskHandler}
+            title={itemData.item.value}
+          />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: Constants.statusBarHeight,
+    // paddingTop: Constants.statusBarHeight,
+    padding: 50,
   },
-
-  input: {
-    borderWidth: 1,
-    borderColor: "black",
-    marginBottom: 20
-  }
 });
