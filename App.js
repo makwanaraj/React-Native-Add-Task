@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View, Button } from "react-native";
 import TaskList from "./components/TaskList";
 import TaskInput from "./components/TaskInput";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
+  const [isAddModal, setIsAddModal] =useState(false); 
 
   const addTaskHandler = (taskTitle) => {
     setTasks((currentTask) => [
       ...currentTask,
       { id: Math.random().toString(), value: taskTitle },
     ]);
+
+    setIsAddModal(false);
   };
 
   const removeTaskHandler = (taskId) => {
@@ -19,9 +22,14 @@ export default function App() {
     });
   };
 
+  const cancelTaskHandler = () => {
+    setIsAddModal(false);
+  }
+
   return (
     <View style={styles.container}>
-      <TaskInput onAddTask={addTaskHandler} />
+      <Button title="Add New Goal" onPress={() => setIsAddModal(true)}/>
+      <TaskInput visible = {isAddModal} onAddTask={addTaskHandler} onCancelTask ={cancelTaskHandler} />
       <FlatList
         keyExtractor={(item, index) => item.id}
         data={tasks}
